@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>동별 출마의향 조사판</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --paper-raised:#FBF9F4;
+    --ink:#22252B;
+    --ink-soft:#5B5C61;
+    --line:#D9D2C1;
+    --run:#1F4B3F;
+    --run-tint:#E4ECE8;
+    --no:#8B8378;
+    --no-tint:#EFEBE3;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Noto Sans KR', sans-serif; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{ max-width:480px; margin:0 auto; padding:26px 18px 60px; min-height:100vh; }
+  header{ margin-bottom:22px; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.14em;
+    color:var(--ink-soft); text-transform:uppercase;
+  }
+  h1{ font-family:'Gowun Batang', serif; font-weight:700; font-size:24px; line-height:1.35; margin:8px 0 8px; }
+  .sub{ font-size:13.5px; line-height:1.6; color:var(--ink-soft); }
+
+  .summary{ display:flex; gap:8px; margin:20px 0 22px; }
+  .chip{
+    flex:1; border:1px solid var(--line); border-radius:10px;
+    background:var(--paper-raised); padding:10px 6px; text-align:center;
+  }
+  .chip .num{ font-family:'IBM Plex Mono', monospace; font-size:19px; font-weight:600; }
+  .chip .lab{ font-size:10.5px; color:var(--ink-soft); margin-top:2px; }
+  .chip.run .num{ color:var(--run); }
+  .chip.no .num{ color:var(--no); }
+
+  .dong-row{
+    display:flex; align-items:center; gap:12px;
+    border:1px solid var(--line); border-radius:10px;
+    background:var(--paper-raised);
+    padding:14px; margin-bottom:10px;
+    cursor:pointer; width:100%; text-align:left;
+    font-family:'Noto Sans KR', sans-serif;
+  }
+  .dong-row:active{ transform:scale(0.99); }
+  .dong-plate{
+    font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:16px;
+    border:1px solid var(--line); border-radius:6px; padding:6px 10px;
+    background:#fff; min-width:52px; text-align:center; flex-shrink:0;
+  }
+  .dong-info{ flex:1; min-width:0; }
+  .dong-name{ font-family:'Gowun Batang', serif; font-size:16px; font-weight:700; }
+  .dong-meta{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
+  .dong-meta b.run{ color:var(--run); font-weight:600; }
+  .dong-meta b.no{ color:var(--no); font-weight:600; }
+
+  .foot{
+    margin-top:20px; display:flex; justify-content:space-between; align-items:center;
+    font-size:12px; color:var(--ink-soft);
+  }
+  .refresh-btn{
+    font-size:12px; color:var(--ink); background:none;
+    border:1px solid var(--line); border-radius:20px; padding:6px 12px; cursor:pointer;
+  }
+
+  .overlay{
+    position:fixed; inset:0; background:rgba(34,37,43,0.45);
+    display:flex; align-items:flex-end; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .18s ease; z-index:10;
+  }
+  .overlay.open{ opacity:1; pointer-events:auto; }
+  .sheet{
+    width:100%; max-width:480px; background:var(--paper-raised);
+    border-radius:16px 16px 0 0; padding:22px 20px 28px;
+    transform:translateY(16px); transition:transform .18s ease;
+  }
+  .overlay.open .sheet{ transform:translateY(0); }
+  .sheet h2{ font-family:'Gowun Batang', serif; font-size:18px; margin:0 0 4px; }
+  .sheet p{ font-size:13px; color:var(--ink-soft); margin:0 0 18px; }
+  .sheet-actions{ display:flex; flex-direction:column; gap:10px; }
+  .sheet-btn{
+    font-size:15px; font-weight:600; padding:14px; border-radius:10px;
+    border:1px solid var(--line); background:#fff; cursor:pointer; text-align:center;
+  }
+  .sheet-btn.run{ background:var(--run); color:#fff; border-color:var(--run); }
+  .sheet-btn.no{ background:var(--no); color:#fff; border-color:var(--no); }
+  .sheet-btn.cancel{ background:none; color:var(--ink-soft); border:none; margin-top:4px; }
+
+  .toast{
+    position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(10px);
+    background:var(--ink); color:#fff; font-size:13px; padding:10px 16px; border-radius:20px;
+    opacity:0; pointer-events:none; transition:opacity .2s ease, transform .2s ease; z-index:20;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow">301동 – 307동 · 총 152세대</div>
+    <h1>동별 출마의향 조사판</h1>
+    <p class="sub">동을 누르면 바로 출마의향 있음/없음을 선택할 수 있어요. 같은 동에서 여러 명이 각자 응답하면 그 동의 후보 수로 누적 집계됩니다.</p>
+  </header>
+
+  <div class="summary">
+    <div class="chip run"><div class="num" id="cnt-run">–</div><div class="lab">출마의향 있음</div></div>
+    <div class="chip no"><div class="num" id="cnt-no">–</div><div class="lab">출마의향 없음</div></div>
+    <div class="chip"><div class="num" id="cnt-total">–</div><div class="lab">총 세대수</div></div>
+  </div>
+
+  <div id="dong-list"></div>
+
+  <div class="foot">
+    <span id="updated-at">불러오는 중…</span>
+    <button class="refresh-btn" id="refresh-btn">새로고침</button>
+  </div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <h2 id="sheet-title">301동</h2>
+    <p>이 동에서 동대표 출마의향이 있으신가요? 응답은 개별 응답자 단위로 누적 집계됩니다.</p>
+    <div class="sheet-actions">
+      <button class="sheet-btn run" id="btn-run">출마의향 있음</button>
+      <button class="sheet-btn no" id="btn-no">출마의향 없음</button>
+      <button class="sheet-btn cancel" id="btn-cancel">닫기</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const DONGS = [
+  {code:301, total:24},
+  {code:302, total:26},
+  {code:303, total:27},
+  {code:304, total:24},
+  {code:305, total:16},
+  {code:306, total:20},
+  {code:307, total:15}
+];
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOEK8PYCyurujkKepogC2SOqi-kp4HqQI3zFnbmh3o-pAdHx5w6zs27RYGUAGd0HApYQ/exec';
+let state = {};
+let activeDong = null;
+
+const listEl = document.getElementById('dong-list');
+const overlay = document.getElementById('overlay');
+const sheetTitle = document.getElementById('sheet-title');
+const toastEl = document.getElementById('toast');
+const updatedAtEl = document.getElementById('updated-at');
+
+function showToast(msg){
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  setTimeout(()=> toastEl.classList.remove('show'), 1800);
+}
+
+function render(){
+  listEl.innerHTML = '';
+  let totalRun=0, totalNo=0, totalHouses=0;
+
+  DONGS.forEach(dong=>{
+    const entry = state[dong.code] || { run:0, no:0 };
+    totalRun += entry.run;
+    totalNo += entry.no;
+    totalHouses += dong.total;
+
+    const row = document.createElement('button');
+    row.className = 'dong-row';
+    row.innerHTML = `
+      <div class="dong-plate">${dong.code}</div>
+      <div class="dong-info">
+        <div class="dong-name">${dong.code}동 <span style="font-weight:400;color:var(--ink-soft);font-size:12px;">· ${dong.total}세대</span></div>
+        <div class="dong-meta">출마의향 <b class="run">${entry.run}명</b> · 없음 <b class="no">${entry.no}명</b></div>
+      </div>
+    `;
+    row.addEventListener('click', ()=> openSheet(dong.code));
+    listEl.appendChild(row);
+  });
+
+  document.getElementById('cnt-run').textContent = totalRun;
+  document.getElementById('cnt-no').textContent = totalNo;
+  document.getElementById('cnt-total').textContent = totalHouses;
+}
+
+function openSheet(dongCode){
+  activeDong = dongCode;
+  sheetTitle.textContent = dongCode + '동';
+  overlay.classList.add('open');
+}
+function closeSheet(){
+  overlay.classList.remove('open');
+  activeDong = null;
+}
+document.getElementById('btn-cancel').addEventListener('click', closeSheet);
+overlay.addEventListener('click', (e)=>{ if(e.target === overlay) closeSheet(); });
+document.getElementById('btn-run').addEventListener('click', ()=> submitStatus('run'));
+document.getElementById('btn-no').addEventListener('click', ()=> submitStatus('no'));
+
+async function submitStatus(status){
+  if(!activeDong) return;
+  const dongCode = activeDong;
+  closeSheet();
+
+  // optimistic local update so the UI feels instant
+  if(!state[dongCode]) state[dongCode] = { run:0, no:0 };
+  if(status === 'run') state[dongCode].run += 1;
+  else state[dongCode].no += 1;
+  render();
+
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ dong: dongCode, status: status })
+    });
+    if(!res.ok) throw new Error('bad response');
+    state = await res.json();
+    showToast(dongCode + '동 응답이 저장되었습니다.');
+  }catch(err){
+    showToast('저장에 실패했어요. 새로고침 후 다시 시도해주세요.');
+  }
+  render();
+  refreshTimestamp();
+}
+
+function refreshTimestamp(){
+  updatedAtEl.textContent = '마지막 업데이트 ' + new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
+}
+
+async function loadState(){
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, { method: 'GET' });
+    state = res.ok ? await res.json() : {};
+  }catch(err){
+    state = {};
+  }
+  render();
+  refreshTimestamp();
+}
+
+document.getElementById('refresh-btn').addEventListener('click', loadState);
+
+loadState();
+setInterval(loadState, 15000);
+</script>
+</body>
+</html>
