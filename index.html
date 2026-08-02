@@ -51,6 +51,7 @@
     font-family:'Noto Sans KR', sans-serif;
   }
   .dong-row:active{ transform:scale(0.99); }
+  .dong-row.locked{ opacity:0.45; }
   .dong-plate{
     font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:16px;
     border:1px solid var(--line); border-radius:6px; padding:6px 10px;
@@ -128,6 +129,9 @@
     <span id="updated-at">불러오는 중…</span>
     <button class="refresh-btn" id="refresh-btn">새로고침</button>
   </div>
+  <div style="text-align:center; margin-top:10px;">
+    <button id="reset-btn" style="display:none; border:none; background:none; font-size:11px; color:var(--ink-soft); text-decoration:underline; cursor:pointer;">잘못 선택하셨나요? 내 응답 초기화</button>
+  </div>
 </div>
 
 <div class="overlay" id="overlay">
@@ -156,11 +160,14 @@ const DONGS = [
 ];
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOEK8PYCyurujkKepogC2SOqi-kp4HqQI3zFnbmh3o-pAdHx5w6zs27RYGUAGd0HApYQ/exec';
 const MY_VOTE_PREFIX = 'dongvote_';
+const MY_DONG_KEY = 'dongvote_myDong';
 let state = {};
 let activeDong = null;
 
 function getMyVote(dong){ return localStorage.getItem(MY_VOTE_PREFIX + dong); }
 function setMyVote(dong, status){ localStorage.setItem(MY_VOTE_PREFIX + dong, status); }
+function getMyDong(){ return localStorage.getItem(MY_DONG_KEY); }
+function setMyDong(dong){ localStorage.setItem(MY_DONG_KEY, dong); }
 
 const listEl = document.getElementById('dong-list');
 const overlay = document.getElementById('overlay');
@@ -178,6 +185,8 @@ function render(){
   listEl.innerHTML = '';
   let totalRun=0, totalNo=0, totalHouses=0;
 
+  const myDong = getMyDong();
+
   DONGS.forEach(dong=>{
     const entry = state[dong.code] || { run:0, no:0 };
     totalRun += entry.run;
@@ -188,9 +197,10 @@ function render(){
     const mineTag = mine
       ? `<span class="my-vote ${mine}">내 응답: ${mine === 'run' ? '있음' : '없음'} · 변경하려면 다시 누르세요</span>`
       : '';
+    const isLocked = myDong && String(myDong) !== String(dong.code);
 
     const row = document.createElement('button');
-    row.className = 'dong-row';
+    row.className = 'dong-row' + (isLocked ? ' locked' : '');
     row.innerHTML = `
       <div class="dong-plate">${dong.code}</div>
       <div class="dong-info">
@@ -206,9 +216,15 @@ function render(){
   document.getElementById('cnt-run').textContent = totalRun;
   document.getElementById('cnt-no').textContent = totalNo;
   document.getElementById('cnt-total').textContent = totalHouses;
+  document.getElementById('reset-btn').style.display = myDong ? 'inline' : 'none';
 }
 
 function openSheet(dongCode){
+  const myDong = getMyDong();
+  if(myDong && String(myDong) !== String(dongCode)){
+    showToast('이미 ' + myDong + '동으로 응답하셨어요. 본인 동만 선택할 수 있습니다.');
+    return;
+  }
   activeDong = dongCode;
   sheetTitle.textContent = dongCode + '동';
   const mine = getMyVote(dongCode);
@@ -254,6 +270,7 @@ async function submitStatus(status){
     if(!res.ok) throw new Error('bad response');
     state = await res.json();
     setMyVote(dongCode, status);
+    if(!getMyDong()) setMyDong(dongCode);
     showToast(dongCode + '동 응답이 저장되었습니다.');
   }catch(err){
     showToast('저장에 실패했어요. 새로고침 후 다시 시도해주세요.');
@@ -265,6 +282,25 @@ async function submitStatus(status){
 function refreshTimestamp(){
   updatedAtEl.textContent = '마지막 업데이트 ' + new Date().toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'});
 }
+
+async function resetMyVote(){
+  const myDong = getMyDong();
+  if(!myDong) return;
+  const prevStatus = getMyVote(myDong);
+  try{
+    const res = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ dong: myDong, status: null, prevStatus: prevStatus || null })
+    });
+    if(res.ok){ state = await res.json(); }
+  }catch(err){ /* still clear locally even if the network call fails */ }
+  localStorage.removeItem(MY_DONG_KEY);
+  localStorage.removeItem(MY_VOTE_PREFIX + myDong);
+  render();
+  showToast('응답이 초기화되었습니다. 다시 선택해주세요.');
+}
+document.getElementById('reset-btn').addEventListener('click', resetMyVote);
 
 async function loadState(){
   try{
