@@ -61,6 +61,12 @@
   .dong-meta{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
   .dong-meta b.run{ color:var(--run); font-weight:600; }
   .dong-meta b.no{ color:var(--no); font-weight:600; }
+  .my-vote{
+    display:inline-block; margin-top:6px; font-size:11px;
+    padding:2px 8px; border-radius:12px; border:1px solid var(--line); color:var(--ink-soft);
+  }
+  .my-vote.run{ border-color:var(--run); color:var(--run); }
+  .my-vote.no{ border-color:var(--no); color:var(--no); }
 
   .foot{
     margin-top:20px; display:flex; justify-content:space-between; align-items:center;
@@ -127,7 +133,7 @@
 <div class="overlay" id="overlay">
   <div class="sheet">
     <h2 id="sheet-title">301동</h2>
-    <p>이 동에서 동대표 출마의향이 있으신가요? 응답은 개별 응답자 단위로 누적 집계됩니다.</p>
+    <p id="sheet-desc">이 동에서 동대표 출마의향이 있으신가요?</p>
     <div class="sheet-actions">
       <button class="sheet-btn run" id="btn-run">출마의향 있음</button>
       <button class="sheet-btn no" id="btn-no">출마의향 없음</button>
@@ -149,8 +155,12 @@ const DONGS = [
   {code:307, total:15}
 ];
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxOEK8PYCyurujkKepogC2SOqi-kp4HqQI3zFnbmh3o-pAdHx5w6zs27RYGUAGd0HApYQ/exec';
+const MY_VOTE_PREFIX = 'dongvote_';
 let state = {};
 let activeDong = null;
+
+function getMyVote(dong){ return localStorage.getItem(MY_VOTE_PREFIX + dong); }
+function setMyVote(dong, status){ localStorage.setItem(MY_VOTE_PREFIX + dong, status); }
 
 const listEl = document.getElementById('dong-list');
 const overlay = document.getElementById('overlay');
@@ -174,6 +184,11 @@ function render(){
     totalNo += entry.no;
     totalHouses += dong.total;
 
+    const mine = getMyVote(dong.code);
+    const mineTag = mine
+      ? `<span class="my-vote ${mine}">내 응답: ${mine === 'run' ? '있음' : '없음'} · 변경하려면 다시 누르세요</span>`
+      : '';
+
     const row = document.createElement('button');
     row.className = 'dong-row';
     row.innerHTML = `
@@ -181,6 +196,7 @@ function render(){
       <div class="dong-info">
         <div class="dong-name">${dong.code}동 <span style="font-weight:400;color:var(--ink-soft);font-size:12px;">· ${dong.total}세대</span></div>
         <div class="dong-meta">출마의향 <b class="run">${entry.run}명</b> · 없음 <b class="no">${entry.no}명</b></div>
+        ${mineTag}
       </div>
     `;
     row.addEventListener('click', ()=> openSheet(dong.code));
@@ -195,6 +211,10 @@ function render(){
 function openSheet(dongCode){
   activeDong = dongCode;
   sheetTitle.textContent = dongCode + '동';
+  const mine = getMyVote(dongCode);
+  document.getElementById('sheet-desc').textContent = mine
+    ? '이 동에서 동대표 출마의향이 있으신가요? 이미 "' + (mine === 'run' ? '있음' : '없음') + '"으로 응답하셨습니다. 다시 선택하면 응답이 변경됩니다.'
+    : '이 동에서 동대표 출마의향이 있으신가요?';
   overlay.classList.add('open');
 }
 function closeSheet(){
@@ -209,10 +229,18 @@ document.getElementById('btn-no').addEventListener('click', ()=> submitStatus('n
 async function submitStatus(status){
   if(!activeDong) return;
   const dongCode = activeDong;
+  const prevStatus = getMyVote(dongCode);
   closeSheet();
+
+  if(prevStatus === status){
+    showToast('이미 이 응답으로 등록되어 있어요.');
+    return;
+  }
 
   // optimistic local update so the UI feels instant
   if(!state[dongCode]) state[dongCode] = { run:0, no:0 };
+  if(prevStatus === 'run') state[dongCode].run = Math.max(0, state[dongCode].run - 1);
+  if(prevStatus === 'no') state[dongCode].no = Math.max(0, state[dongCode].no - 1);
   if(status === 'run') state[dongCode].run += 1;
   else state[dongCode].no += 1;
   render();
@@ -221,10 +249,11 @@ async function submitStatus(status){
     const res = await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ dong: dongCode, status: status })
+      body: JSON.stringify({ dong: dongCode, status: status, prevStatus: prevStatus || null })
     });
     if(!res.ok) throw new Error('bad response');
     state = await res.json();
+    setMyVote(dongCode, status);
     showToast(dongCode + '동 응답이 저장되었습니다.');
   }catch(err){
     showToast('저장에 실패했어요. 새로고침 후 다시 시도해주세요.');
