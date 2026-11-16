@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>이문아이파크자이 3단지 입대의 액션리스트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f4f0;--card:#fff;--ink:#1d1d1b;--sub:#6b6a66;--line:#e4e2dc;--accent:#1f4e79;--hi:#c0392b;--mid:#b9770e;--lo:#7f8c8d;--ok:#2e7d4f;--wait:#8e44ad;}
+@media (prefers-color-scheme:dark){:root{--bg:#161615;--card:#21211f;--ink:#ecebe7;--sub:#a3a29d;--line:#34332f;--accent:#7fb2e5;}}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Noto Sans KR",system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5}
+header{padding:18px 16px 8px;max-width:980px;margin:0 auto}
+h1{font-size:19px;margin:0 0 2px}
+.sub{color:var(--sub);font-size:13px}
+main{max-width:980px;margin:0 auto;padding:0 12px 90px}
+.kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 8px;text-align:center;cursor:pointer}
+.kpi b{display:block;font-size:22px}
+.kpi span{font-size:12px;color:var(--sub)}
+.kpi.on{outline:2px solid var(--accent)}
+.tabs{display:flex;gap:6px;margin:8px 0}
+.tab{flex:1;padding:9px;border:1px solid var(--line);background:var(--card);border-radius:10px;font:inherit;color:var(--ink);cursor:pointer}
+.tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.bar{display:flex;gap:6px;margin:8px 0;flex-wrap:wrap}
+.bar input,.bar select{flex:1;min-width:120px;padding:9px 10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px;-webkit-overflow-scrolling:touch}
+.chip{white-space:nowrap;padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:13px;cursor:pointer;color:var(--ink)}
+.chip.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.group-h{margin:18px 4px 6px;font-weight:700;font-size:15px;display:flex;align-items:center;gap:8px}
+.group-h small{color:var(--sub);font-weight:400}
+.item{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--lo);border-radius:12px;margin:8px 0;overflow:hidden}
+.item.p-높음{border-left-color:var(--hi)}.item.p-보통{border-left-color:var(--mid)}
+.item.s-완료{opacity:.6}
+.ihead{padding:11px 12px;cursor:pointer}
+.ititle{font-weight:700;display:flex;gap:6px;align-items:flex-start}
+.no{color:var(--sub);font-weight:500;min-width:28px}
+.meta{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;font-size:12px}
+.tag{padding:2px 8px;border-radius:6px;background:var(--bg);border:1px solid var(--line);color:var(--sub)}
+.st{font-weight:700;color:#fff;border:none}
+.st-미착수{background:#95a5a6}.st-진행중{background:#2874a6}.st-회신대기{background:var(--wait)}.st-완료{background:var(--ok)}.st-보류{background:#566573}
+.letter{color:var(--hi);border-color:var(--hi)}
+.agtag{color:var(--accent);border-color:var(--accent);font-weight:700}
+.agbox{background:var(--card);border:2px solid var(--accent);border-radius:12px;padding:12px;margin:10px 0}
+.agbox h3{margin:0 0 4px;font-size:16px}
+.agline{padding:8px 0;border-top:1px dashed var(--line)}
+.agline:first-of-type{border-top:none}
+.agline b{display:block}
+.agline span{font-size:13px;color:var(--sub)}
+.ibody{display:none;padding:0 12px 12px;border-top:1px dashed var(--line)}
+.item.open .ibody{display:block}
+.row{margin-top:10px}
+.row h4{margin:0 0 3px;font-size:12px;color:var(--sub);font-weight:500}
+.row p{margin:0;white-space:pre-wrap}
+.row.quick p{background:rgba(46,125,79,.1);padding:8px;border-radius:8px}
+.row.resolve p{background:rgba(31,78,121,.09);padding:8px;border-radius:8px}
+.acts{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.acts select{padding:7px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
+button.b{padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
+button.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+button.danger{color:var(--hi);border-color:var(--hi)}
+.fab{position:fixed;right:16px;bottom:18px;background:var(--accent);color:#fff;border:none;border-radius:999px;padding:13px 18px;font:inherit;font-weight:700;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+.note{padding:10px 12px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-size:13px;color:var(--sub);margin:8px 0}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:flex-end;justify-content:center;z-index:10}
+.modal.on{display:flex}
+.sheet{background:var(--card);width:100%;max-width:640px;max-height:92vh;overflow:auto;border-radius:16px 16px 0 0;padding:16px}
+.sheet h3{margin:0 0 10px}
+.sheet label{display:block;font-size:12px;color:var(--sub);margin:10px 0 3px}
+.sheet input,.sheet select,.sheet textarea{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.sheet textarea{min-height:64px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.foot{display:flex;gap:8px;justify-content:space-between;margin-top:16px}
+.empty{text-align:center;color:var(--sub);padding:30px}
+#copyArea{width:100%;min-height:300px}
+@media (max-width:520px){.kpis{grid-template-columns:repeat(5,1fr);gap:5px}.kpi b{font-size:18px}.kpi span{font-size:11px}}
+</style>
+</head>
+<body>
+<header>
+  <h1>이문아이파크자이 3단지 입대의 액션리스트</h1>
+  <div class="sub">입주자대표회의 협의용 · 항목을 탭하면 상세 · 읽기 전용 <span id="sync"></span></div>
+</header>
+<main>
+  <div class="kpis" id="kpis"></div>
+  <div class="tabs">
+    <button class="tab on" data-v="list">항목별</button>
+    <button class="tab" data-v="agenda" id="agTab">📌 다음 안건</button>
+    <button class="tab" data-v="contact">연락처별</button>
+    <button class="tab" data-v="owner">담당자별</button>
+  </div>
+  <div class="bar">
+    <input id="q" placeholder="검색 (예: 조합, CCTV, 307동)">
+    <select id="pf"><option value="">우선순위 전체</option><option>높음</option><option>보통</option><option>낮음</option></select>
+    <select id="lf"><option value="">공문 전체</option><option value="y">공문 필요만</option></select>
+  </div>
+  <div class="chips" id="chips"></div>
+  <div id="msg"></div>
+  <div id="out"></div>
+  <div class="acts" style="margin-top:20px"><button class="b" id="copyBtn">회의록용 텍스트 복사</button></div>
+</main>
+<button class="fab" id="addBtn">＋ 항목 추가</button>
+
+<div class="modal" id="edit"><div class="sheet">
+  <h3 id="eTitle">항목 추가</h3>
+  <form id="eform">
+    <label>제목 *</label><input name="title" required>
+    <div class="two">
+      <div><label>분류</label><select name="cat" id="catSel"></select></div>
+      <div><label>우선순위</label><select name="priority"><option>높음</option><option selected>보통</option><option>낮음</option></select></div>
+    </div>
+    <div class="two">
+      <div><label>상태</label><select name="status"><option>미착수</option><option>진행중</option><option>회신대기</option><option>완료</option><option>보류</option></select></div>
+      <div><label>기한</label><input name="due" placeholder="예: 11/30"></div>
+    </div>
+    <label>연락처 (쉼표로 구분)</label><input name="contacts" placeholder="관리사무소, 조합, HDC현산">
+    <div class="two">
+      <div><label>담당</label><input name="owner" placeholder="예: 총무이사 / 홍길동"></div>
+      <div><label>제안자</label><input name="proposer"></div>
+    </div>
+    <label><input type="checkbox" name="letter" style="width:auto"> 공문 발송 필요</label>
+    <label><input type="checkbox" name="agenda" style="width:auto"> 📌 다음 정기회의 안건으로 추천</label>
+    <label>바로 할 수 있는 것</label><textarea name="quick"></textarea>
+    <label>해결하려면 (해결 조건·절차)</label><textarea name="resolve"></textarea>
+    <label>배경·원문 / 진행 메모</label><textarea name="note"></textarea>
+    <div class="foot">
+      <button type="button" class="b danger" id="delBtn">삭제</button>
+      <div style="display:flex;gap:8px"><button type="button" class="b" id="cancelBtn">취소</button><button class="b pri">저장</button></div>
+    </div>
+  </form>
+</div></div>
+
+<div class="modal" id="copyM"><div class="sheet">
+  <h3>회의록용 텍스트</h3>
+  <div class="sub" id="copyHint">아래 내용을 길게 눌러 복사하세요.</div>
+  <textarea id="copyArea" readonly></textarea>
+  <div class="foot"><span></span><button class="b" id="copyClose">닫기</button></div>
+</div></div>
+
+<script>
+const CATS=["입대의 운영·계약","용역관리(청소·경비)","커뮤니티센터","주차·출입","보안시설(CCTV·도어)","조경·외부공간","하자·누수","대외 민원·협의"];
+const STATUS=["미착수","진행중","회신대기","완료","보류"];
+const PR={"높음":0,"보통":1,"낮음":2};
+let items=[],db=null,canWrite=true,view="list",catF="",stF="",editingId=null,delArm=false;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const arr=v=>Array.isArray(v)?v:String(v||"").split(",").map(x=>x.trim()).filter(Boolean);
+
+$("#catSel").innerHTML=CATS.map(c=>`<option>${c}</option>`).join("");
+
+function filtered(){
+  const q=$("#q").value.trim().toLowerCase(),pf=$("#pf").value,lf=$("#lf").value;
+  return items.filter(it=>{
+    if(catF&&it.cat!==catF)return false;
+    if(stF&&it.status!==stF)return false;
+    if(pf&&it.priority!==pf)return false;
+    if(lf&&!it.letter)return false;
+    if(q){const hay=[it.title,it.cat,arr(it.contacts).join(" "),it.owner,it.proposer,it.quick,it.resolve,it.note,"#"+it.no].join(" ").toLowerCase();if(!hay.includes(q))return false;}
+    return true;
+  }).sort((a,b)=>(a.status==="완료")-(b.status==="완료")||(PR[a.priority]??1)-(PR[b.priority]??1)||(a.no||0)-(b.no||0));
+}
+
+function kpis(){
+  const n=s=>items.filter(i=>i.status===s).length;
+  const defs=[["","전체",items.length],["미착수","미착수",n("미착수")],["진행중","진행중",n("진행중")],["회신대기","회신대기",n("회신대기")],["완료","완료",n("완료")]];
+  $("#kpis").innerHTML=defs.map(([k,l,v])=>`<div class="kpi ${stF===k?"on":""}" data-s="${k}"><b>${v}</b><span>${l}</span></div>`).join("");
+  $("#kpis").querySelectorAll(".kpi").forEach(e=>e.onclick=()=>{stF=e.dataset.s;render();});
+  const cats=[...new Set([...CATS,...items.map(i=>i.cat).filter(Boolean)])];
+  $("#chips").innerHTML=[`<button class="chip ${catF?"":"on"}" data-c="">전체</button>`,...cats.map(c=>`<button class="chip ${catF===c?"on":""}" data-c="${esc(c)}">${esc(c)} ${items.filter(i=>i.cat===c&&i.status!=="완료").length}</button>`)].join("");
+  $("#chips").querySelectorAll(".chip").forEach(e=>e.onclick=()=>{catF=e.dataset.c;render();});
+}
+
+function card(it){
+  const cs=arr(it.contacts);
+  return `<div class="item p-${esc(it.priority)} s-${esc(it.status)}" data-id="${esc(it._id)}">
+  <div class="ihead"><div class="ititle"><span class="no">#${esc(it.no)}</span><span>${esc(it.title)}</span></div>
+  <div class="meta"><span class="tag st st-${esc(it.status)}">${esc(it.status)}</span><span class="tag">${esc(it.priority)}</span>
+  ${it.owner?`<span class="tag">👤 ${esc(it.owner)}</span>`:""}${cs.length?`<span class="tag">📞 ${esc(cs.join(", "))}</span>`:""}
+  ${it.agenda&&it.status!=="완료"?`<span class="tag agtag">📌 다음 안건</span>`:""}${it.letter?`<span class="tag letter">공문</span>`:""}${it.due?`<span class="tag">⏰ ${esc(it.due)}</span>`:""}</div></div>
+  <div class="ibody">
+   <div class="row"><h4>분류 · 제안</h4><p>${esc(it.cat)}${it.proposer?" · 제안: "+esc(it.proposer):""}</p></div>
+   ${it.quick?`<div class="row quick"><h4>✅ 바로 할 수 있는 것</h4><p>${esc(it.quick)}</p></div>`:""}
+   ${it.resolve?`<div class="row resolve"><h4>🔧 해결하려면</h4><p>${esc(it.resolve)}</p></div>`:""}
+   ${it.note?`<div class="row"><h4>배경·메모</h4><p>${esc(it.note)}</p></div>`:""}
+   ${canWrite?`<div class="acts"><select class="stSel">${STATUS.map(s=>`<option ${s===it.status?"selected":""}>${s}</option>`).join("")}</select><button class="b editBtn">편집</button></div>`:""}
+  </div></div>`;
+}
+
+function render(){
+  kpis();
+  const list=filtered(),out=$("#out");
+  if(!items.length){out.innerHTML=`<div class="empty">아직 항목이 없습니다.</div>`;return;}
+  if(!list.length){out.innerHTML=`<div class="empty">조건에 맞는 항목이 없습니다.</div>`;return;}
+  const agN=items.filter(i=>i.agenda&&i.status!=="완료").length;
+  $("#agTab").textContent=`📌 다음 안건 ${agN}`;
+  let groups=[],head="";
+  if(view==="agenda"){
+    const ag=list.filter(i=>i.agenda&&i.status!=="완료");
+    if(!ag.length){out.innerHTML=`<div class="empty">추천된 안건이 없습니다. 항목 편집에서 '다음 정기회의 안건으로 추천'을 체크하세요.</div>`;return;}
+    head=`<div class="agbox"><h3>📌 다음 정기회의 안건 추천 (${ag.length}건)</h3><div class="sub">입대의 의결·결정이 필요한 항목입니다. 회의 후 처리된 항목은 체크를 해제하거나 상태를 바꿔주세요.</div>${ag.map((i,n)=>`<div class="agline"><b>${n+1}. ${esc(i.title)} <small style="color:var(--sub)">#${esc(i.no)}</small></b><span>결정할 것: ${esc(i.resolve||"-")}</span></div>`).join("")}</div>`;
+    const m={};ag.forEach(i=>(m[i.cat||"기타"]??=[]).push(i));
+    groups=[...CATS,...Object.keys(m).filter(k=>!CATS.includes(k))].filter(k=>m[k]).map(k=>[k,m[k]]);
+  }else if(view==="list"){
+    const m={};list.forEach(i=>(m[i.cat||"기타"]??=[]).push(i));
+    groups=[...CATS,...Object.keys(m).filter(k=>!CATS.includes(k))].filter(k=>m[k]).map(k=>[k,m[k]]);
+  }else{
+    const m={};
+    list.forEach(i=>{const keys=view==="contact"?arr(i.contacts):arr((i.owner||"미지정").replace(/\//g,","));(keys.length?keys:["미지정"]).forEach(k=>(m[k]??=[]).push(i));});
+    groups=Object.entries(m).sort((a,b)=>b[1].length-a[1].length);
+  }
+  out.innerHTML=head+groups.map(([k,v])=>`<div class="group-h">${view==="contact"?"📞 ":view==="owner"?"👤 ":""}${esc(k)} <small>${v.filter(i=>i.status!=="완료").length}건 진행 필요</small></div>${v.map(card).join("")}`).join("");
+  out.querySelectorAll(".item").forEach(el=>{
+    const id=el.dataset.id;
+    el.querySelector(".ihead").onclick=()=>el.classList.toggle("open");
+    const s=el.querySelector(".stSel");if(s)s.onchange=()=>saveField(id,{status:s.value});
+    const e=el.querySelector(".editBtn");if(e)e.onclick=()=>openEdit(id);
+  });
+}
+
+async function saveField(id,patch){
+  if(!db)return;
+  try{await db.doc("items/"+id).update({...patch,updatedAt:new Date().toISOString()});}
+  catch(e){flash("저장하지 못했습니다: "+(e.code||e.message));if(e.code==="invalid_argument"){canWrite=false;render();}}
+}
+
+function flash(t){$("#msg").innerHTML=t?`<div class="note">${esc(t)}</div>`:"";}
+
+function openEdit(id){
+  editingId=id;delArm=false;$("#delBtn").textContent="삭제";
+  const f=$("#eform"),it=id?items.find(i=>i._id===id):{cat:catF||CATS[0],priority:"보통",status:"미착수"};
+  $("#eTitle").textContent=id?`#${it.no} 편집`:"항목 추가";
+  $("#delBtn").style.visibility=id?"visible":"hidden";
+  ["title","cat","priority","status","due","owner","proposer","quick","resolve","note"].forEach(k=>f[k].value=it[k]||"");
+  if(it.cat&&!CATS.includes(it.cat))f.cat.insertAdjacentHTML("beforeend",`<option>${esc(it.cat)}</option>`),f.cat.value=it.cat;
+  f.contacts.value=arr(it.contacts).join(", ");
+  f.letter.checked=!!it.letter;f.agenda.checked=!!it.agenda;
+  $("#edit").classList.add("on");
+}
+$("#cancelBtn").onclick=()=>$("#edit").classList.remove("on");
+$("#addBtn").onclick=()=>openEdit(null);
+$("#eform").onsubmit=async ev=>{
+  ev.preventDefault();if(!db){flash("데이터 연결 전입니다. 잠시 후 다시 시도하세요.");return;}
+  const f=ev.target;
+  const data={title:f.title.value.trim(),cat:f.cat.value,priority:f.priority.value,status:f.status.value,due:f.due.value.trim(),
+    contacts:arr(f.contacts.value),owner:f.owner.value.trim(),proposer:f.proposer.value.trim(),letter:f.letter.checked,agenda:f.agenda.checked,
+    quick:f.quick.value.trim(),resolve:f.resolve.value.trim(),note:f.note.value.trim(),updatedAt:new Date().toISOString()};
+  try{
+    if(editingId){await db.doc("items/"+editingId).update(data);}
+    else{data.no=Math.max(0,...items.map(i=>+i.no||0))+1;data.createdAt=data.updatedAt;await db.collection("items").doc().set(data);}
+    $("#edit").classList.remove("on");flash("");
+  }catch(e){flash(e.code==="quota_exceeded"?"저장 공간이 가득 찼습니다.":"저장하지 못했습니다 ("+(e.code||e.message)+"). 편집 권한이 있는지 확인하세요.");}
+};
+$("#delBtn").onclick=async()=>{
+  if(!delArm){delArm=true;$("#delBtn").textContent="한 번 더 누르면 삭제";return;}
+  try{await db.doc("items/"+editingId).delete();$("#edit").classList.remove("on");}catch(e){flash("삭제하지 못했습니다.");}
+};
+
+$("#copyBtn").onclick=async()=>{
+  const list=filtered();const m={};list.forEach(i=>(m[i.cat||"기타"]??=[]).push(i));
+  const d=new Date();
+  if(view==="agenda"){
+    const ag=list.filter(i=>i.agenda&&i.status!=="완료");
+    let t=`[다음 정기회의 안건 추천] ${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()} 기준\n`;
+    ag.forEach((i,n)=>{t+=`\n${n+1}. ${i.title}\n - 결정할 것: ${(i.resolve||"-").replace(/\n/g," ")}\n - 담당: ${i.owner||"미정"} / 제안: ${i.proposer||"-"}\n`;});
+    $("#copyArea").value=t;
+    try{await navigator.clipboard.writeText(t);$("#copyHint").textContent="클립보드에 복사했습니다. 카톡에 붙여넣으세요.";}catch(e){$("#copyHint").textContent="아래 내용을 길게 눌러 복사하세요.";}
+    $("#copyM").classList.add("on");return;
+  }
+  let t=`[이문아이파크자이 3단지 입대의 액션리스트] ${d.getFullYear()}.${d.getMonth()+1}.${d.getDate()} 기준\n`;
+  Object.entries(m).forEach(([k,v])=>{t+=`\n■ ${k}\n`;v.forEach(i=>{t+=`#${i.no} ${i.title} [${i.status}/${i.priority}]\n - 담당: ${i.owner||"미정"} / 연락: ${arr(i.contacts).join(", ")||"-"}${i.letter?" / 공문 필요":""}\n${i.quick?` - 바로: ${i.quick.replace(/\n/g," ")}\n`:""}${i.resolve?` - 해결: ${i.resolve.replace(/\n/g," ")}\n`:""}`;});});
+  $("#copyArea").value=t;
+  try{await navigator.clipboard.writeText(t);$("#copyHint").textContent="클립보드에 복사했습니다. 카톡에 붙여넣으세요.";}catch(e){$("#copyHint").textContent="아래 내용을 길게 눌러 복사하세요.";}
+  $("#copyM").classList.add("on");
+};
+$("#copyClose").onclick=()=>$("#copyM").classList.remove("on");
+
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));b.classList.add("on");view=b.dataset.v;render();});
+["q","pf","lf"].forEach(id=>$("#"+id).addEventListener("input",render));
+
+render();
+const SNAP={"at": "2026-11-17 06:41", "items": [{"agenda": true, "cat": "입대의 운영·계약", "contacts": ["선거관리위원회", "동대문구청 공동주택과"], "due": "", "letter": true, "no": 1, "note": "11/16(일) 19시 선관위 주재 임원 선출 회의", "owner": "회장 / 총무이사", "priority": "높음", "proposer": "Jumbo", "quick": "11/16 선관위 주재 선출 결과를 회의록에 기록하고 단톡방·게시판에 공지", "resolve": "구청 신고 대상 여부 확인 후 입주자대표회의 구성(임원) 신고 완료", "status": "진행중", "title": "임원 선출(회장·감사·총무이사) 결과 정리 및 신고", "_id": "a01"}, {"agenda": true, "cat": "입대의 운영·계약", "contacts": ["한국전력", "관리사무소"], "due": "", "letter": false, "no": 2, "note": "시뮬레이션 필요", "owner": "재무이사", "priority": "보통", "proposer": "Jumbo", "quick": "관리사무소에 최근 전기요금 고지서·세대별 사용량 자료 요청, 한전에 계약방식별 요금 시뮬레이션 요청", "resolve": "종합/단일 비교표 작성 → 변경 요건(입주자 동의 등) 확인 → 입대의 의결 → 한전 변경 신청", "status": "미착수", "title": "전기계약방식 변경 검토 (종합 → 단일)", "_id": "a02"}, {"agenda": true, "cat": "입대의 운영·계약", "contacts": ["현 관리업체", "동대문구청 공동주택과"], "due": "", "letter": false, "no": 3, "note": "", "owner": "총무이사 / 감사", "priority": "높음", "proposer": "Jumbo", "quick": "현 관리 도급계약서의 계약기간·해지조건 확인, 국토부 「주택관리업자 및 사업자 선정지침」 입찰 절차 정리", "resolve": "관리방법 변경 의결(입주자 동의 요건 확인) → 위탁관리업체 입찰·선정 → 계약 체결", "status": "미착수", "title": "관리방식 변경 (도급 → 위탁) 및 위탁관리업체 선정", "_id": "a03"}, {"cat": "입대의 운영·계약", "contacts": ["위탁관리업체(선정 후)", "현 용역업체"], "due": "", "letter": false, "no": 4, "note": "선행: #3", "owner": "총무이사 / 감사", "priority": "보통", "proposer": "Jumbo", "quick": "현 용역별 계약 만료일·인원·금액을 표로 정리", "resolve": "#3 위탁관리업체 선정 후 사업자 선정지침에 따라 입찰 → 입대의 의결 → 계약", "status": "미착수", "title": "경비(보안)·미화·조경 용역업체 선정", "_id": "a04"}, {"agenda": true, "cat": "입대의 운영·계약", "contacts": ["조합(조합장)", "HDC현산 CS팀"], "due": "", "letter": true, "no": 5, "note": "", "owner": "회장 / 총무이사", "priority": "높음", "proposer": "Jumbo", "quick": "이 대시보드 '연락처별' 탭에서 조합·현산 항목을 묶어 요청 목록 1차 작성", "resolve": "일괄 공문 발송(회신기한 명시) + 조합·현산·입대의 월 1회 정례 협의 합의", "status": "미착수", "title": "조합·시공사 협의사항 통합 정리 및 정기 협의", "_id": "a05"}, {"agenda": true, "cat": "용역관리(청소·경비)", "contacts": ["관리사무소", "청소용역업체"], "due": "", "letter": false, "no": 6, "note": "청소업체 관리 방법도 함께 정할 것", "owner": "총무이사", "priority": "높음", "proposer": "정수", "quick": "청소 계약서·과업지시서 사본, 인원(3명으로 파악)·구역별 청소일지 요청", "resolve": "주차장·계단이 과업에 없으면 업체와 범위 조정(인원·금액 변경 견적) → 입대의 의결. 이후 월 1회 점검표로 관리", "status": "미착수", "title": "청소 용역 업무범위 확인 (주차장·계단·공용부 포함 여부)", "_id": "a06"}, {"agenda": true, "cat": "용역관리(청소·경비)", "contacts": ["관리사무소", "경비용역업체"], "due": "", "letter": false, "no": 7, "note": "'쉬는시간 없게'가 아니라 '휴게 중 공백 없게'로 목표 설정", "owner": "총무이사", "priority": "높음", "proposer": "정수", "quick": "경비 인원·근무형태·초소 배치·휴게시간표 요청", "resolve": "휴게시간은 법정 보장이라 없앨 수 없음 → 교대(시차) 휴게로 초소 공백이 없도록 근무표 조정. 부족하면 인원 보강·CCTV 보완 검토", "status": "미착수", "title": "경비 근무체계 확인 (휴게시간 중 초소 공백 해소)", "_id": "a07"}, {"agenda": true, "cat": "커뮤니티센터", "contacts": ["조합", "HDC현산", "관리사무소"], "due": "", "letter": true, "no": 8, "note": "", "owner": "커뮤니티이사", "priority": "높음", "proposer": "정수", "quick": "관리사무소와 합동 점검 — 시설·장비·비품 목록과 하자 사진 기록", "resolve": "하자 없는 시설부터 부분 인수 가능한지 조합·현산에 공문 질의 → 입대의 동의 범위 의결", "status": "미착수", "title": "커뮤니티센터 상태 점검 및 부분 인수(이관) 가능 여부", "_id": "a08"}, {"agenda": true, "cat": "커뮤니티센터", "contacts": ["관리사무소", "커뮤니티 위탁운영업체"], "due": "", "letter": false, "no": 9, "note": "", "owner": "커뮤니티이사", "priority": "보통", "proposer": "Jumbo", "quick": "인근 단지 운영 사례 수집, 위탁업체 2~3곳 견적 요청", "resolve": "비용·장단점 비교표 → 입대의 의결 → 커뮤니티 운영규정 제정", "status": "미착수", "title": "커뮤니티 운영방식 결정 (자치관리 vs 위탁)", "_id": "a09"}, {"cat": "커뮤니티센터", "contacts": ["조합"], "due": "", "letter": true, "no": 10, "note": "조합장님께 부탁드릴 일", "owner": "커뮤니티이사", "priority": "보통", "proposer": "장수정", "quick": "당초 설계·장비 목록에 포함됐는지 확인", "resolve": "조합장께 설치 요청 공문 → 설치 일정 회신", "status": "미착수", "title": "헬스클럽 천국의 계단 설치 요청", "_id": "a10"}, {"cat": "커뮤니티센터", "contacts": ["HDC현산 CS팀", "관리사무소"], "due": "", "letter": true, "no": 11, "note": "", "owner": "커뮤니티이사 / 기술이사", "priority": "높음", "proposer": "장수정", "quick": "발생 위치 사진, 환기설비 가동 상태 확인", "resolve": "현산에 하자 접수 → 원인 조사(누수·환기) 결과 회신 → 보수 완료 확인", "status": "미착수", "title": "골프장·사우나 곰팡이 냄새 원인 제거", "_id": "a11"}, {"cat": "커뮤니티센터", "contacts": ["관리사무소", "조합"], "due": "", "letter": false, "no": 12, "note": "", "owner": "커뮤니티이사", "priority": "낮음", "proposer": "장수정", "quick": "게스트룸 현장 확인(비품·하자)", "resolve": "이용규정·예약방식 마련 후 오픈", "status": "미착수", "title": "게스트룸 상태 확인 및 운영 준비", "_id": "a12"}, {"agenda": true, "cat": "주차·출입", "contacts": ["관리사무소", "출입통제 시스템 업체"], "due": "", "letter": false, "no": 13, "note": "", "owner": "기술이사", "priority": "높음", "proposer": "정수, 장수정", "quick": "305동 출입 시 307동 비번이 안 되고 카드만 되는 원인 확인, 커뮤니티 출입 시 307동 입구 공용비번 사용 여부 확인", "resolve": "출입 방식안(공용비번 vs 카드/앱) 결정 → 시스템 설정 변경 → 입주민 공지", "status": "미착수", "title": "출입 비밀번호·카드 체계 정리 (305·307동, 커뮤니티)", "_id": "a13"}, {"agenda": true, "cat": "주차·출입", "contacts": ["관리사무소", "동대문구청 공동주택과"], "due": "", "letter": false, "no": 14, "note": "", "owner": "재무이사", "priority": "높음", "proposer": "Jumbo, 장수정", "quick": "현 관리규약 주차 조항, 세대별 등록 차량 대수 현황 받기", "resolve": "규정안 작성 → 입대의 의결 → 관리규약 개정 사항이면 입주자 동의·구청 신고", "status": "미착수", "title": "주차관리규정 심의 (1가구 2대 이상 추가요금 포함)", "_id": "a14"}, {"cat": "주차·출입", "contacts": ["관리사무소"], "due": "", "letter": false, "no": 15, "note": "", "owner": "기술이사", "priority": "보통", "proposer": "장수정", "quick": "입주민 설문(전기차 보유·구매 예정) 배포", "resolve": "수요 기반 전기차·일반차 공용 구획안 → 입대의 의결 → 도색·표지 정비", "status": "미착수", "title": "전기차 수요조사 및 주차구획 정비", "_id": "a15"}, {"cat": "주차·출입", "contacts": ["조합", "HDC현산"], "due": "", "letter": true, "no": 16, "note": "", "owner": "기술이사", "priority": "보통", "proposer": "장수정", "quick": "잘못된 사인물 사진·위치 정리", "resolve": "시공 오류면 현산 하자로, 추가 요청이면 조합 공문 → 교체 완료 확인", "status": "미착수", "title": "305·307동 동입구 표시·엘리베이터 사인물 수정 교체", "_id": "a16"}, {"agenda": true, "cat": "보안시설(CCTV·도어)", "contacts": ["스크린도어·볼라드 업체", "조합", "1·2단지 입대의", "동대문소방서"], "due": "", "letter": true, "no": 17, "note": "입구 두 곳 모두 소방도로. 1·2단지 비용분담 협의 중", "owner": "기술이사 / 재무이사", "priority": "높음", "proposer": "정수, Jumbo", "quick": "업체 2~3곳 현장실사·견적 요청, 설치 후보 위치 표시", "resolve": "소방차 진입(비상 개방) 방식 소방서 협의 → 위치 확정 → 조합 통보 공문 → 1·2단지와 비용분담 합의 → 입대의 의결", "status": "미착수", "title": "출입구 스크린도어 + 소방도로 유압식 볼라드 사전작업", "_id": "a17"}, {"cat": "보안시설(CCTV·도어)", "contacts": ["관리사무소", "도어 설치업체", "동대문구청"], "due": "", "letter": false, "no": 18, "note": "", "owner": "기술이사", "priority": "보통", "proposer": "Jumbo", "quick": "산책로 연결 지점 현장 사진, 외부인 출입 시간대 파악", "resolve": "설치 필요성·방식 논의 → 견적 → 입대의 의결", "status": "미착수", "title": "천장산 산책로 도어 설치 검토", "_id": "a18"}, {"cat": "보안시설(CCTV·도어)", "contacts": ["조합", "HDC현산", "관리사무소", "CCTV 업체"], "due": "", "letter": true, "no": 19, "note": "기존 10대 증설 계획안 참고", "owner": "기술이사", "priority": "높음", "proposer": "정수, 장수정", "quick": "전기·통신·CCTV 배선도와 설치 공정표 요청 공문 발송", "resolve": "도면 수령 → 사각지대·배선 검토 반영 → 공정표 확정 → 설치·준공 확인", "status": "미착수", "title": "CCTV 추가 설치 — 도면·공정표 확보", "_id": "a19"}, {"cat": "조경·외부공간", "contacts": ["조합", "조경업체"], "due": "", "letter": true, "no": 20, "note": "위치 확인 필요", "owner": "기술이사", "priority": "보통", "proposer": "정수", "quick": "정확히 어느 입구인지 입대의 내 확인, 현장 사진", "resolve": "조경 준공도면(식재평면도) 확보 → 도면 대비 식재 여부 확인 → 조합에 추가식재 공문", "status": "미착수", "title": "입구 옹벽 조경수 확인(대나무 여부) 및 추가식재", "_id": "a20"}, {"cat": "조경·외부공간", "contacts": ["조합", "조경업체"], "due": "", "letter": true, "no": 21, "note": "", "owner": "기술이사 / 재무이사", "priority": "보통", "proposer": "Jumbo", "quick": "설치 위치·규모 정리", "resolve": "당초 설계 포함 여부 조합 확인 → 미포함 시 견적·비용 주체 결정", "status": "미착수", "title": "개비온 옹벽 설치", "_id": "a21"}, {"cat": "조경·외부공간", "contacts": ["조합", "조경업체"], "due": "", "letter": true, "no": 22, "note": "301동 입주자 요청 포함", "owner": "커뮤니티이사", "priority": "보통", "proposer": "Jumbo, 장수정", "quick": "상태 불량 수목, 조명 영향받는 301동 위치 사진", "resolve": "조합에 교체·추가식재 공문 → 식재 완료 확인. 조명 시간·각도는 #29 한예종 협의와 함께", "status": "미착수", "title": "한예종 라인 사철나무 교체 및 테니스장 조명 차단 식재", "_id": "a22"}, {"cat": "조경·외부공간", "contacts": ["HDC현산 CS팀", "조경업체"], "due": "", "letter": true, "no": 23, "note": "", "owner": "기술이사", "priority": "보통", "proposer": "Jumbo", "quick": "단지 내 고사목 위치 전수 조사(사진·번호)", "resolve": "조경 하자보수 요청 → 교체 완료 확인", "status": "미착수", "title": "고사목 교체", "_id": "a23"}, {"cat": "조경·외부공간", "contacts": ["조합"], "due": "", "letter": true, "no": 24, "note": "조합장님께 부탁드릴 일", "owner": "커뮤니티이사", "priority": "보통", "proposer": "장수정", "quick": "부지 경계·현황 사진", "resolve": "조합장께 식재 요청 공문 → 식재 완료 확인", "status": "미착수", "title": "삼익공영 부지 식재 (사철나무 외 1~1.5m 수목)", "_id": "a24"}, {"cat": "조경·외부공간", "contacts": ["관리사무소", "조합"], "due": "", "letter": false, "no": 25, "note": "", "owner": "재무이사", "priority": "낮음", "proposer": "Jumbo", "quick": "펜스 필요 구간 표시, 견적 1~2곳", "resolve": "비용 주체(조합/장충금/관리비) 결정 → 입대의 의결 → 설치", "status": "미착수", "title": "단지 내 잔디밭 펜스 설치", "_id": "a25"}, {"cat": "조경·외부공간", "contacts": ["조합", "관리사무소"], "due": "", "letter": true, "no": 26, "note": "", "owner": "커뮤니티이사", "priority": "보통", "proposer": "장수정", "quick": "입주민 아이디어 공모 (단톡방·설문)", "resolve": "용도 확정 → 조합에 조경가구 설치 요청 공문", "status": "미착수", "title": "천장산 수변시설·잔디광장 활용 (용도 확정·조경가구 설치)", "_id": "a26"}, {"cat": "조경·외부공간", "contacts": ["조합", "HDC현산"], "due": "", "letter": false, "no": 27, "note": "", "owner": "기술이사", "priority": "낮음", "proposer": "장수정", "quick": "대상 위치 사진·설명 받기 (장수정 님 추후 공유)", "resolve": "변경 사유 정리 → 조합/현산 요청", "status": "미착수", "title": "바닥 조경석 변경", "_id": "a27"}, {"cat": "하자·누수", "contacts": ["HDC현산 CS팀", "관리사무소"], "due": "", "letter": true, "no": 28, "note": "", "owner": "기술이사", "priority": "높음", "proposer": "장수정", "quick": "누수·침수 이력 세대·공용부 목록과 사진 취합", "resolve": "현산에 일괄 하자 접수 → 보수 일정 회신 → 완료 확인 (하자담보기간 내)", "status": "미착수", "title": "누수·침수로 인한 마감 불량 하자 점검", "_id": "a28"}, {"cat": "대외 민원·협의", "contacts": ["한국예술종합학교"], "due": "", "letter": true, "no": 29, "note": "", "owner": "회장", "priority": "보통", "proposer": "Jumbo", "quick": "소음 발생 시간·위치 기록, 영향 세대 파악", "resolve": "한예종 시설 담당과 면담 → 작업시간·방음 조치 합의 (테니스장 조명 포함)", "status": "미착수", "title": "한예종 송추공방 및 기타 소음 협의", "_id": "a29"}, {"cat": "대외 민원·협의", "contacts": ["국가유산청(구 문화재청)", "동대문구청"], "due": "", "letter": true, "no": 30, "note": "문화재청은 2024년 국가유산청으로 개편", "owner": "총무이사", "priority": "보통", "proposer": "장수정", "quick": "사방댐 위치·관리 주체 확인, 과거 민원 이력 정리", "resolve": "연간 점검 요청 시기·양식 표준화 → 관리사무소 정기 업무로 이관", "status": "미착수", "title": "사방댐 정기관리 요청 민원 매뉴얼화", "_id": "a30"}, {"cat": "대외 민원·협의", "contacts": ["동대문구청"], "due": "", "letter": true, "no": 31, "note": "", "owner": "총무이사", "priority": "보통", "proposer": "장수정", "quick": "사진 첨부 설명 받기 (장수정 님 추후 공유)", "resolve": "민원 접수 → 구청 현장 확인·조치 회신", "status": "미착수", "title": "천장산 배수 관련 구청 민원 (삼익공영 부지 경계)", "_id": "a31"}]};
+canWrite=false;document.getElementById("addBtn").style.display="none";
+items=SNAP.items;$("#sync").textContent="· "+SNAP.at+" 기준";render();
+</script>
+</body>
+</html>
