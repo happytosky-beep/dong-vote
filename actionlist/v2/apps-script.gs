@@ -13,9 +13,11 @@
  * [배포 → 배포 관리 → 수정(연필) → 버전: 새 버전 → 배포] (URL 그대로 유지)
  */
 const PIN_INIT = '여기에_비밀번호';
+const KAKAO_KEY_INIT = '여기에_카톡연동키';   // 카카오 채널 챗봇용 (영문·숫자 20자 이상 아무거나)
+const SITE_URL = '';                       // 의견함 주소 (답변 문구에 표시)
 const ITEMS = 'items', OPS = 'opinions';
 const COLS = ['id','no','cat','title','contacts','quick','resolve','owner','proposer','priority','status','letter','agenda','due','note','updatedAt'];
-const OCOLS = ['id','no','cat','title','body','dong','relNo','status','reply','linkedNo','likes','likedBy','createdAt','updatedAt'];
+const OCOLS = ['id','no','cat','title','body','dong','relNo','status','reply','linkedNo','likes','likedBy','createdAt','updatedAt','source'];
 
 function sheet_(name, cols) {
   const ss = SpreadsheetApp.getActive();
@@ -58,6 +60,7 @@ function rows_(s) { const v = s.getDataRange().getValues(); return v.length < 2 
 
 function setup() {
   PropertiesService.getScriptProperties().setProperty('PIN', PIN_INIT);
+  PropertiesService.getScriptProperties().setProperty('KAKAO_KEY', KAKAO_KEY_INIT);
   const s = sheet_(ITEMS, COLS);
   if (s.getLastRow() < 2) {
     const now = new Date().toISOString();
@@ -76,6 +79,31 @@ function doGet() {
   });
 }
 
+function kakaoReply_(text) {
+  return json_({ version: '2.0', template: { outputs: [{ simpleText: { text: text } }] } });
+}
+// 카카오톡 채널 챗봇: "의견: 내용" 으로 보내면 의견함에 접수
+function kakao_(e, b, now) {
+  const key = PropertiesService.getScriptProperties().getProperty('KAKAO_KEY');
+  if (!key || String((e.parameter || {}).k || '') !== key) return kakaoReply_('연결 설정이 올바르지 않습니다. 입대의에 문의해 주세요.');
+  const u = String((b.userRequest || {}).utterance || '').trim();
+  const m = u.match(/^의견\s*[:：]?\s*([\s\S]*)$/);
+  const guide = '의견은 아래처럼 보내주세요.\n\n의견: 방문차량 주차 시간을 정해 주세요\n\n※ 이름·호수·연락처는 적지 마세요.\n※ 하자·고장은 관리사무소로 접수해 주세요.';
+  if (!m) return kakaoReply_(guide);
+  const body = m[1].trim().slice(0, 1500);
+  if (body.length < 5) return kakaoReply_(guide);
+  const uid = String(((b.userRequest || {}).user || {}).id || '').slice(0, 40);
+  const cache = CacheService.getScriptCache();
+  if (uid && cache.get('kk_' + uid)) return kakaoReply_('잠시 후 다시 보내주세요. (1분 간격)');
+  const s = sheet_(OPS, OCOLS);
+  const no = maxNo_(s.getDataRange().getValues()) + 1;
+  const title = body.split('\n')[0].slice(0, 40);
+  s.appendRow(toORow_({ id: 'o' + Date.now(), no: no, cat: '기타', title: title, body: body, dong: '', relNo: '', status: '접수',
+    reply: '', linkedNo: '', likes: 0, likedBy: '', createdAt: now, updatedAt: now, source: '카톡채널' }));
+  if (uid) cache.put('kk_' + uid, '1', 60);
+  return kakaoReply_('의견이 접수되었습니다. (💬' + no + ')\n입대의가 검토해서 답변드립니다.' + (SITE_URL ? '\n처리 현황: ' + SITE_URL : ''));
+}
+
 function findRow_(s, id) {
   const v = s.getDataRange().getValues();
   const i = v.findIndex((r, n) => n > 0 && String(r[0]) === String(id));
@@ -88,6 +116,8 @@ function doPost(e) {
   const now = new Date().toISOString();
   const lock = LockService.getScriptLock(); lock.waitLock(15000);
   try {
+    // ---- 카카오톡 채널 챗봇 (오픈빌더 스킬) ----
+    if (b.userRequest) return kakao_(e, b, now);
     // ---- 입주민 (비밀번호 없음) ----
     if (b.action === 'opinion_add') {
       const it = b.item || {};
@@ -99,7 +129,7 @@ function doPost(e) {
       const s = sheet_(OPS, OCOLS);
       const o = { id: 'o' + Date.now(), no: maxNo_(s.getDataRange().getValues()) + 1, cat: str_(it.cat).slice(0, 30),
         title: title, body: body, dong: str_(it.dong).slice(0, 10), relNo: str_(it.relNo).slice(0, 10),
-        status: '접수', reply: '', linkedNo: '', likes: 0, likedBy: '', createdAt: now, updatedAt: now };
+        status: '접수', reply: '', linkedNo: '', likes: 0, likedBy: '', createdAt: now, updatedAt: now, source: '웹' };
       s.appendRow(toORow_(o));
       if (cid) cache.put('op_' + cid, '1', 60);
       return json_({ ok: true });

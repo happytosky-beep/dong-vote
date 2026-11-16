@@ -363,7 +363,7 @@ function opCard(o){
   const dt=o.createdAt?new Date(o.createdAt):null;
   return `<div class="item" data-oid="${esc(o._id)}">
   <div class="ihead"><div class="ititle"><span class="no">💬${esc(o.no)}</span><span>${esc(o.title)}</span></div>
-  <div class="meta"><span class="tag st ost${si}">${esc(o.status)}</span>${o.cat?`<span class="tag">${esc(o.cat)}</span>`:""}${o.dong?`<span class="tag">${esc(o.dong)}</span>`:""}${o.linkedNo?`<span class="tag agtag">→ 액션 #${esc(o.linkedNo)}</span>`:""}${o.reply?`<span class="tag">답변 있음</span>`:""}${dt&&!isNaN(dt)?`<span class="tag">${dt.getMonth()+1}/${dt.getDate()}</span>`:""}</div></div>
+  <div class="meta"><span class="tag st ost${si}">${esc(o.status)}</span>${o.cat?`<span class="tag">${esc(o.cat)}</span>`:""}${o.dong?`<span class="tag">${esc(o.dong)}</span>`:""}${o.source&&o.source!=="웹"?`<span class="tag">${esc(o.source)}</span>`:""}${o.linkedNo?`<span class="tag agtag">→ 액션 #${esc(o.linkedNo)}</span>`:""}${o.reply?`<span class="tag">답변 있음</span>`:""}${dt&&!isNaN(dt)?`<span class="tag">${dt.getMonth()+1}/${dt.getDate()}</span>`:""}</div></div>
   <div class="ibody">
    <div class="row"><p>${esc(o.body)}</p></div>
    ${o.relNo?`<div class="row"><h4>관련 액션</h4><p>#${esc(o.relNo)}</p></div>`:""}
