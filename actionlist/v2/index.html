@@ -11,6 +11,11 @@
 *{box-sizing:border-box}
 body{margin:0;font-family:"Noto Sans KR",system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.5}
 header{padding:18px 16px 8px;max-width:980px;margin:0 auto}
+.hrow{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.hrow>div{min-width:0}
+button.xbtn{flex:none;display:inline-flex;align-items:center;gap:6px;padding:9px 14px;border-radius:10px;border:none;background:#1d6f42;color:#fff;font:inherit;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15);white-space:nowrap}
+button.xbtn:hover{background:#185c37}
+@media (max-width:520px){button.xbtn{padding:8px 11px;font-size:13px}}
 h1{font-size:19px;margin:0 0 2px}
 .sub{color:var(--sub);font-size:13px}
 main{max-width:980px;margin:0 auto;padding:0 12px 90px}
@@ -86,8 +91,13 @@ button.danger{color:var(--hi);border-color:var(--hi)}
 </head>
 <body>
 <header>
-  <h1>이문아이파크자이 3단지 입대의 액션리스트 <small style="font-size:12px;color:var(--sub)">v2</small></h1>
-  <div class="sub">입대의 액션리스트 · 💬 입주민 누구나 의견 등록·공감 가능 <span id="sync"></span></div>
+  <div class="hrow">
+  <div>
+    <h1>이문아이파크자이 3단지 입대의 액션리스트 <small style="font-size:12px;color:var(--sub)">v2</small></h1>
+    <div class="sub">입대의 액션리스트 · 💬 입주민 누구나 의견 등록·공감 가능 <span id="sync"></span></div>
+  </div>
+  <button class="xbtn" id="xlsxBtn" title="현재 목록을 엑셀 파일로 받기">📥 엑셀 다운로드</button>
+  </div>
 </header>
 <main>
   <div class="kpis" id="kpis"></div>
@@ -106,7 +116,7 @@ button.danger{color:var(--hi);border-color:var(--hi)}
   <div class="chips" id="chips"></div>
   <div id="msg"></div>
   <div id="out"></div>
-  <div class="acts" style="margin-top:20px"><button class="b" id="copyBtn">텍스트 복사</button><button class="b" id="xlsxBtn">📥 엑셀 다운로드</button><button class="b" id="pinBtn">🔑 입대의 편집 모드</button></div>
+  <div class="acts" style="margin-top:20px"><button class="b" id="copyBtn">텍스트 복사</button><button class="b" id="pinBtn">🔑 입대의 편집 모드</button></div>
 </main>
 <button class="fab" id="addBtn">＋ 항목 추가</button>
 
