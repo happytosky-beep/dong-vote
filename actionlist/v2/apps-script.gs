@@ -16,7 +16,7 @@ const PIN_INIT = '여기에_비밀번호';
 const KAKAO_KEY_INIT = '여기에_카톡연동키';   // 카카오 채널 챗봇용 (영문·숫자 20자 이상 아무거나)
 const SITE_URL = '';                       // 의견함 주소 (답변 문구에 표시)
 const ITEMS = 'items', OPS = 'opinions';
-const COLS = ['id','no','cat','title','contacts','quick','resolve','owner','proposer','priority','status','letter','agenda','due','note','updatedAt','agendaOrder'];
+const COLS = ['id','no','cat','title','contacts','quick','resolve','owner','proposer','priority','status','letter','agenda','due','note','updatedAt','agendaOrder','meeting'];
 const OCOLS = ['id','no','cat','title','body','dong','relNo','status','reply','linkedNo','likes','likedBy','createdAt','updatedAt','source'];
 
 function sheet_(name, cols) {
@@ -1040,11 +1040,12 @@ const SEED = [
 "priority": "높음",
 "status": "진행중",
 "letter": true,
-"agenda": false,
+"agenda": true,
 "due": "11/20 긴급회의",
 "quick": "단톡방 투표로 11/20 긴급회의·12/2 정기회의 참석 여부 확인. 예산 요청 후보별 견적 현황 정리: #12 게스트룸·시니어클럽 비품, #17 입구 스크린도어·#18 산책로 도어, #10 천국의 계단, #20·#35·#36 옹벽·추가식재, #26 수변시설 배수로·다목적 공간, #42 조경 추가 조명, #25 잔디밭 펜스",
 "resolve": "긴급회의에서 조합에 요청할 항목·우선순위·금액 범위 의결 → 회의록 작성 → 조합에 예산 요청 공문(견적 첨부, 회신기한 명시) → 회신 결과를 각 항목에 반영. 기존 안건 1~4는 12/2 정기회의로",
 "note": "[11/19 회장] 조합 면담 사안 외 추가 예산이 필요한 부분을 11/20 긴급회의로 따로 논의. 기존 안건은 12/2 정기회의. 긴급회의 소집 통지 기간·의결 정족수는 관리규약 기준 확인 필요",
-"id": "a43"
+"id": "a43",
+"meeting": "임시"
 }
 ];
