@@ -114,6 +114,7 @@ button.danger{color:var(--hi);border-color:var(--hi)}
     <input id="q" placeholder="검색 (예: 조합, CCTV, 307동)">
     <select id="pf"><option value="">우선순위 전체</option><option>높음</option><option>보통</option><option>낮음</option></select>
     <select id="lf"><option value="">공문 전체</option><option value="y">공문 필요만</option></select>
+    <select id="mf"><option value="">회의 안건 전체</option><option value="정기">📌 정기회의 안건</option><option value="임시">⚡ 임시회의 안건</option></select>
   </div>
   <div class="chips" id="chips"></div>
   <div id="msg"></div>
@@ -198,12 +199,13 @@ const arr=v=>Array.isArray(v)?v:String(v||"").split(",").map(x=>x.trim()).filter
 $("#catSel").innerHTML=CATS.map(c=>`<option>${c}</option>`).join("");
 
 function filtered(){
-  const q=$("#q").value.trim().toLowerCase(),pf=$("#pf").value,lf=$("#lf").value;
+  const q=$("#q").value.trim().toLowerCase(),pf=$("#pf").value,lf=$("#lf").value,mf=$("#mf").value;
   return items.filter(it=>{
     if(catF&&it.cat!==catF)return false;
     if(stF&&it.status!==stF)return false;
     if(pf&&it.priority!==pf)return false;
     if(lf&&!it.letter)return false;
+    if(mf&&!(it.agenda&&it.status!=="완료"&&mt(it)===mf))return false;
     if(q){const hay=[it.title,it.cat,arr(it.contacts).join(" "),it.owner,it.proposer,it.quick,it.resolve,it.note,"#"+it.no].join(" ").toLowerCase();if(!hay.includes(q))return false;}
     return true;
   }).sort((a,b)=>(a.status==="완료")-(b.status==="완료")||(PR[a.priority]??1)-(PR[b.priority]??1)||(a.no||0)-(b.no||0));
@@ -350,7 +352,7 @@ $("#copyBtn").onclick=async()=>{
 $("#copyClose").onclick=()=>$("#copyM").classList.remove("on");
 
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));b.classList.add("on");view=b.dataset.v;render();});
-["q","pf","lf"].forEach(id=>$("#"+id).addEventListener("input",render));
+["q","pf","lf","mf"].forEach(id=>$("#"+id).addEventListener("input",render));
 
 render();
 
