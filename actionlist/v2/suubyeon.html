@@ -25,14 +25,14 @@ a{color:#2F5F8F}
 <body><div class="wrap">
 <h1>상부 수변 활용 3개 안 — 배치 개념도</h1>
 <p class="sub">이문아이파크자이 3단지 · 입대의 검토용 · 조경 계획도(파고라·야외무대·데크·선베드·야외테이블) 위에 각 안을 얹은 개념도</p>
-<div class="note"><b>회색·청록 = 이미 계획된 시설</b> (파고라 1, 야외무대 1, 데크 1, 선베드 2개소, 야외테이블 2개소, 동쪽 계단, 서쪽 디딤돌) · <b>주황 = 이번에 추가할 시설</b>. 도면을 똑바로 펴서 그린 개념도이고 축척은 맞지 않습니다. 정확한 크기는 실측·조경업체 설계로 확정합니다.</div>
+<div class="note"><b>회색·청록 = 기존·계획 시설</b> (파고라 1, 야외무대 1, 데크 1, 선베드 2개소, 야외테이블 2개소, 동쪽 계단, 서쪽 디딤돌) · <b>주황 = 이번에 추가할 시설</b>. 도면을 똑바로 펴서 그린 개념도이고 축척은 맞지 않습니다. 정확한 크기는 실측·조경업체 설계로 확정합니다.</div>
 <div id="out"></div>
 <p class="note">세 안 모두: 장비 진입 불가 → 인력 운반 기준 · 조명은 빛공해 3종 기준(세대 창면 10lx 이하, 산 쪽 더 낮게) · 금액은 가견적. · <a href="./">액션리스트로 돌아가기</a></p>
 </div>
 <script>
 // 좌표: 대지 x 40~660, y 60~440 (도면을 펴서 단순화)
 const X=f=>40+620*f, Y=f=>60+380*f, W=f=>620*f, H=f=>380*f;
-function base(){
+function base(noDeck){
  let s=`<defs>
  <pattern id="g" width="12" height="12" patternUnits="userSpaceOnUse"><rect width="12" height="12" fill="#C9C08A"/><path d="M2 10l2-5M8 11l1-4" stroke="#B3AA72"/></pattern>
  <pattern id="dk" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#6F8F8C"/><path d="M0 4h8" stroke="#5d7b78"/></pattern>
@@ -44,13 +44,14 @@ function base(){
  for(let i=0;i<9;i++) s+=`<ellipse cx="${X(.05)}" cy="${Y(.12+i*.075)}" rx="9" ry="13" fill="#D8CDB4" stroke="#9c8f70"/>`;
  s+=`<text x="${X(.05)}" y="${Y(.86)}" text-anchor="middle" font-size="10" fill="#5a4a30">디딤돌</text>`;
  // 기존 파고라
- s+=`<rect x="${X(.13)}" y="${Y(.10)}" width="${W(.23)}" height="${H(.25)}" fill="#5b6570" opacity=".85"/><text x="${X(.245)}" y="${Y(.24)}" text-anchor="middle" font-size="12" fill="#fff">파고라(계획)</text>`;
+ if(!noDeck) s+=`<rect x="${X(.13)}" y="${Y(.10)}" width="${W(.23)}" height="${H(.25)}" fill="url(#dk)"/><text x="${X(.245)}" y="${Y(.24)}" text-anchor="middle" font-size="12" fill="#fff">데크(계획)</text>`;
  // 야외무대 L + stage
  s+=`<path d="M${X(.36)} ${Y(.10)} h${W(.10)} v${H(.30)} h${-W(.04)} v${-H(.22)} h${-W(.06)}z" fill="url(#dk)"/>`;
  s+=`<rect x="${X(.40)}" y="${Y(.38)}" width="${W(.13)}" height="${H(.19)}" fill="#4E7A76"/><text x="${X(.465)}" y="${Y(.49)}" text-anchor="middle" font-size="12" fill="#fff">야외무대</text>`;
  // 데크 path + big deck
  s+=`<rect x="${X(.46)}" y="${Y(.57)}" width="${W(.05)}" height="${H(.16)}" fill="url(#dk)"/>`;
- s+=`<rect x="${X(.42)}" y="${Y(.72)}" width="${W(.32)}" height="${H(.22)}" fill="url(#dk)"/><text x="${X(.58)}" y="${Y(.85)}" text-anchor="middle" font-size="12" fill="#fff">데크(계획)</text>`;
+ s+=`<rect x="${X(.42)}" y="${Y(.72)}" width="${W(.32)}" height="${H(.22)}" fill="#5b6570" opacity=".85"/><text x="${X(.58)}" y="${Y(.85)}" text-anchor="middle" font-size="12" fill="#fff">파고라(기존)</text>`;
+
  // 선베드·테이블
  const sb=(x,y)=>`<rect x="${X(x)}" y="${Y(y)}" width="${W(.06)}" height="${H(.05)}" fill="#F2E6A6" stroke="#8a7c2a"/><rect x="${X(x)}" y="${Y(y+.065)}" width="${W(.06)}" height="${H(.05)}" fill="#F2E6A6" stroke="#8a7c2a"/>`;
  s+=sb(.17,.52)+sb(.66,.40);
@@ -66,8 +67,9 @@ function base(){
  return s;
 }
 const O='#B4561A';
+function drain(){return `<rect x="${X(.60)}" y="${Y(.60)}" width="18" height="12" fill="#666" stroke="#fff" stroke-width="2"/><text x="${X(.60)+9}" y="${Y(.60)-5}" text-anchor="middle" font-size="10" fill="#1B2A3A" font-weight="700">중앙 배수구</text>`;}
 const opts=[
- {t:'1안 · 파고라 2개 추가',p:'약 5,220만 원 (공급가)',d:'계획된 파고라 1개에 더해, 비어 있는 동쪽 잔디(선베드 아래)와 서쪽 잔디(선베드·테이블 사이)에 같은 형태의 파고라를 1개씩 추가. 하부 투수블록, 파고라마다 테이블 2세트.',
+ {t:'1안 · 파고라 2개 추가',p:'약 5,220만 원 (공급가)',d:'기존 파고라 1개에 더해, 비어 있는 동쪽 잔디(선베드 아래)와 서쪽 잔디(선베드·테이블 사이)에 같은 형태의 파고라를 1개씩 추가. 하부 투수블록, 파고라마다 테이블 2세트.',
   svg:()=>`<rect x="${X(.55)}" y="${Y(.55)}" width="${W(.19)}" height="${H(.15)}" fill="#BDB8AE"/><rect x="${X(.57)}" y="${Y(.565)}" width="${W(.15)}" height="${H(.12)}" fill="${O}" opacity=".9"/><text x="${X(.645)}" y="${Y(.635)}" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">신설 파고라 ②</text>
   <rect x="${X(.26)}" y="${Y(.56)}" width="${W(.15)}" height="${H(.25)}" fill="#BDB8AE"/><rect x="${X(.27)}" y="${Y(.58)}" width="${W(.13)}" height="${H(.21)}" fill="${O}" opacity=".9"/><text x="${X(.335)}" y="${Y(.69)}" text-anchor="middle" font-size="12" fill="#fff" font-weight="700">신설 파고라 ①</text>`,
   lg:[[O,'신설 파고라'],['#BDB8AE','투수블록']]},
@@ -82,20 +84,22 @@ const opts=[
    s+=`<text x="${X(.315)}" y="${Y(.555)}" text-anchor="middle" font-size="10" fill="#1B2A3A">텐트 패드</text>`;
    return s;},
   lg:[['#7A5A44','텐트 패드'],['#F3EEE3','티피(시즌)'],['#8B6A4E','피크닉 테이블+파라솔'],['#E8A15C','스트링 라이트·포토월']]},
- {t:'3안 · 배드민턴장 1면',p:'약 3,140만 원 (공급가)',d:'비어 있는 서쪽 잔디에 규격 코트(여유 포함 15.4×8.1m)를 두는 안. 서쪽 선베드 2개소를 옮겨야 할 수 있고, 이 공간에 실제로 들어가는지는 실측 확인이 필요합니다. 방구망 펜스 H3m.',
-  svg:()=>`<rect x="${X(.12)}" y="${Y(.42)}" width="${W(.29)}" height="${H(.30)}" fill="#2F6E6A" stroke="#1B2A3A" stroke-width="3" stroke-dasharray="6 4" opacity=".95"/>
-  <rect x="${X(.14)}" y="${Y(.45)}" width="${W(.25)}" height="${H(.24)}" fill="none" stroke="#FFFDF8" stroke-width="2"/>
-  <line x1="${X(.265)}" y1="${Y(.45)}" x2="${X(.265)}" y2="${Y(.69)}" stroke="#FFFDF8" stroke-width="4"/>
-  <text x="${X(.265)}" y="${Y(.575)}" text-anchor="middle" font-size="11" fill="#FFFDF8" font-weight="700" transform="rotate(-90 ${X(.265)} ${Y(.575)})">네트</text>
-  <text x="${X(.265)}" y="${Y(.40)}" text-anchor="middle" font-size="11" fill="#1B2A3A">코트 13.4×6.1m · 여유 포함 15.4×8.1m</text>
-  <text x="${X(.265)}" y="${Y(.76)}" text-anchor="middle" font-size="10" fill="#B4561A" font-weight="700">※ 선베드 이전 필요할 수 있음 · 실측 확인</text>`,
-  lg:[['#2F6E6A','코트(조립식 타일)'],['#fff','방구망 펜스(점선)']]}
+ {t:'3안 · 배드민턴장 1면 (세로 배치, 데크 대신)',p:'약 3,140만 원 (공급가) · 데크 제외분 절감',noDeck:true,d:'북서쪽에 계획된 데크를 빼고 그 자리에 코트를 세로(남북)로 배치. 여유 포함 15.4×8.1m, 방구망 펜스 H3m. 서쪽 선베드 2개소는 코트와 겹쳐 남쪽으로 옮겨야 합니다.',
+  svg:()=>`<rect x="${X(.12)}" y="${Y(.04)}" width="${W(.20)}" height="${H(.62)}" fill="#2F6E6A" stroke="#1B2A3A" stroke-width="3" stroke-dasharray="6 4" opacity=".95"/>
+  <rect x="${X(.135)}" y="${Y(.08)}" width="${W(.17)}" height="${H(.54)}" fill="none" stroke="#FFFDF8" stroke-width="2"/>
+  <line x1="${X(.135)}" y1="${Y(.35)}" x2="${X(.305)}" y2="${Y(.35)}" stroke="#FFFDF8" stroke-width="4"/>
+  <line x1="${X(.135)}" y1="${Y(.28)}" x2="${X(.305)}" y2="${Y(.28)}" stroke="#FFFDF8" stroke-width="1.5"/><line x1="${X(.135)}" y1="${Y(.42)}" x2="${X(.305)}" y2="${Y(.42)}" stroke="#FFFDF8" stroke-width="1.5"/>
+  <line x1="${X(.22)}" y1="${Y(.08)}" x2="${X(.22)}" y2="${Y(.28)}" stroke="#FFFDF8" stroke-width="1.5"/><line x1="${X(.22)}" y1="${Y(.42)}" x2="${X(.22)}" y2="${Y(.62)}" stroke="#FFFDF8" stroke-width="1.5"/>
+  <text x="${X(.22)}" y="${Y(.34)}" text-anchor="middle" font-size="11" fill="#FFFDF8" font-weight="700">네트</text>
+  <text x="${X(.52)}" y="${Y(.06)}" font-size="10" fill="#1B2A3A">← 코트 13.4×6.1m (세로)</text><text x="${X(.52)}" y="${Y(.11)}" font-size="10" fill="#1B2A3A">　 여유 포함 15.4×8.1m</text>
+  <text x="${X(.52)}" y="${Y(.16)}" font-size="10" fill="#B4561A" font-weight="700">　 계획 데크 제외</text>`,
+  lg:[['#2F6E6A','코트(조립식 타일)'],['#fff','방구망 펜스(점선)']],extra:true}
 ];
 const out=document.getElementById('out');
 opts.forEach((o,i)=>{
  out.insertAdjacentHTML('beforeend',`<div class="card"><h2>${o.t}</h2><div class="price">${o.p}</div><p>${o.d}</p>
- <svg viewBox="0 0 700 480" aria-label="${o.t} 배치도">${base()}${o.svg()}</svg>
- <div class="legend"><span><i class="sw" style="background:#5b6570"></i>계획된 파고라</span><span><i class="sw" style="background:#4E7A76"></i>야외무대·데크(계획)</span><span><i class="sw" style="background:#F2E6A6"></i>선베드·야외테이블(계획)</span>${o.lg.map(l=>`<span><i class="sw" style="background:${l[0]}"></i>${l[1]}</span>`).join('')}</div></div>`);
+ <svg viewBox="0 0 700 480" aria-label="${o.t} 배치도">${base(o.noDeck)}${o.svg()}${o.extra?`<rect x="${X(.12)}" y="${Y(.70)}" width="${W(.06)}" height="${H(.05)}" fill="#F2E6A6" stroke="#B4561A" stroke-width="2"/><rect x="${X(.12)}" y="${Y(.765)}" width="${W(.06)}" height="${H(.05)}" fill="#F2E6A6" stroke="#B4561A" stroke-width="2"/><text x="${X(.12)}" y="${Y(.685)}" font-size="9" fill="#B4561A">선베드 이전</text>`:''}${drain()}</svg>
+ <div class="legend"><span><i class="sw" style="background:#5b6570"></i>기존 파고라</span><span><i class="sw" style="background:#4E7A76"></i>야외무대·데크(계획)</span><span><i class="sw" style="background:#F2E6A6"></i>선베드·야외테이블(계획)</span>${o.lg.map(l=>`<span><i class="sw" style="background:${l[0]}"></i>${l[1]}</span>`).join('')}</div></div>`);
 });
 </script>
 </body></html>
