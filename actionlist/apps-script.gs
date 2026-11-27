@@ -819,7 +819,7 @@ const SEED = [
 "agendaOrder": 1,
 "priority": "높음",
 "letter": false,
-"title": "[안건 1] 입대의 회의 진행·업무 진행 프로토콜 논의 및 확정 (회의록 작성 주체 포함)",
+"title": "[안건 1] 입대의 회의 진행, 업무 진행 프로토콜 논의 및 확정",
 "contacts": [
 "관리사무소"
 ],
